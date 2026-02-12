@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEMOVI · Validación de permisos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f3f5f7 0%, #eaeef2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .card {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -8px rgba(0,20,40,0.15), 0 8px 12px -6px rgba(0,0,0,0.02);
+            padding: 2.5rem 2rem;
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 180px;
+            height: auto;
+            background: transparent;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .gov-path {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.4rem 0.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e3a5f;
+            background: #f0f4fa;
+            padding: 0.7rem 1.4rem;
+            border-radius: 100px;
+            letter-spacing: 0.01em;
+            border: 1px solid #ccd9e2;
+        }
+
+        .gov-path span {
+            color: #2c5f7e;
+            font-weight: 600;
+        }
+
+        .separator {
+            color: #7b98aa;
+            margin: 0 0.15rem;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #dbe3ea;
+            padding-bottom: 1.2rem;
+            margin-bottom: 1.8rem;
+            gap: 0.8rem;
+        }
+
+        .nav-item {
+            color: #0b3b4b;
+            font-size: 1.05rem;
+            font-weight: 550;
+            text-decoration: none;
+            padding: 0.25rem 0;
+            border-bottom: 3px solid transparent;
+            transition: 0.1s ease;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-item:hover {
+            border-bottom-color: #1c5a4b;
+            color: #0e3a30;
+        }
+
+        .hero-image-container {
+            width: 100%;
+            margin: 1.8rem 0 2rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #eef3f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d0dfe6;
+            aspect-ratio: 16/9;
+            box-shadow: 0 8px 18px rgba(0,59,106,0.08);
+        }
+
+        .hero-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .title-container {
+            background-color: #1c5a4b;
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 2rem;
+            display: inline-block;
+            width: auto;
+            min-width: 100%;
+            border-radius: 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: white;
+            letter-spacing: -0.01em;
+            margin: 0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .folio-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f4e5f;
+            display: block;
+            margin-bottom: 0.6rem;
+            margin-left: 0.2rem;
+        }
+
+        .consultar-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-folio {
+            flex: 1 1 240px;
+            padding: 0.9rem 1.4rem;
+            font-size: 1.1rem;
+            border: 2px solid #b7ccd6;
+            border-radius: 60px;
+            outline: none;
+            background: white;
+            transition: 0.2s;
+            color: #0b2e3a;
+            font-weight: 450;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .input-folio:focus {
+            border-color: #1c5a4b;
+            box-shadow: 0 0 0 4px rgba(28, 90, 75, 0.1), inset 0 1px 4px #d9e2e9;
+        }
+
+        .btn-consultar {
+            background: #1c5a4b;
+            color: white;
+            border: none;
+            padding: 0.9rem 2.4rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.15s;
+            letter-spacing: 0.03em;
+            box-shadow: 0 6px 14px rgba(28, 90, 75, 0.25);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-consultar:hover {
+            background: #0e3a30;
+            transform: scale(0.98);
+            box-shadow: 0 4px 10px rgba(14, 58, 48, 0.3);
+        }
+
+        .resultados-card {
+            margin-top: 1.5rem;
+            background: #f8fafc;
+            border: 1px solid #dbe3ea;
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            display: none;
+        }
+
+        .resultados-card.activo {
+            display: block;
+        }
+
+        .folio-encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2eaf0;
+        }
+
+        .folio-numero {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0a4455;
+            background: #e2f0f2;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+        }
+
+        .estado-vigente {
+            background: #1c5a4b;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .grid-datos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .dato-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.8rem 1rem;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #1c5a4b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .dato-etiqueta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5f7e8c;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .dato-valor {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b3b4b;
+        }
+
+        /* IMAGEN DEL FOOTER - GRANDE */
+        .footer-image-container {
+            width: 100%;
+            margin-top: 2rem;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f0f4fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d0dfe6;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+        }
+
+        .footer-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .gov-footer {
+            margin-top: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #34626c;
+            border-top: 1px solid #cbd8e0;
+            padding-top: 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .cdmx-badge {
+            background: #e7edf1;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: #0a4455;
+        }
+
+        @media (max-width: 800px) {
+            .card { padding: 1.8rem 1.2rem; }
+            .section-title { 
+                font-size: 1.3rem; 
+                white-space: normal;
+            }
+            .btn-consultar { width: 100%; }
+            .top-header { flex-direction: column; align-items: flex-start; }
+            .logo-img { width: 150px; }
+            .title-container { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top-header">
+            <div class="logo-container">
+                <div class="logo-img">
+                    <img src="https://laliteradice.com/wp-content/uploads/2025/01/imagen-2-edited.png" alt="Ciudad de México - Capital de la Transformación">
+                </div>
+            </div>
+            <div class="gov-path">
+                <span>CDMX</span> 
+                <span class="separator">/</span> 
+                Secretarías 
+                <span class="separator">/</span> 
+                <span style="font-weight: 700; color: #003b6a;">SEMOVI</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="#" class="nav-item">Transparencia</a>
+            <a href="#" class="nav-item">Atención Ciudadana</a>
+            <a href="#" class="nav-item">Trámites y Servicios</a>
+        </div>
+
+        <div class="hero-image-container">
+            <img src="https://static.wixstatic.com/media/3afe45_a7718ae1ab564181afd928c80ef0ee1d~mv2.jpeg" alt="Nueva Licencia Permanente - Preguntas Frecuentes">
+        </div>
+
+        <div class="title-container">
+            <h1 class="section-title">Validación de permisos en línea</h1>
+        </div>
+
+        <div style="margin-bottom: 0.8rem;">
+            <label class="folio-label" for="folio">Ingrese el folio del permiso (6 números)</label>
+            <div class="consultar-group">
+                <input type="text" id="folio" class="input-folio" placeholder="Ej. 123456" maxlength="6" autocomplete="off">
+                <button class="btn-consultar" onclick="buscarFolio()">Consultar</button>
+            </div>
+        </div>
+
+        <div id="resultados" class="resultados-card">
+            <div class="folio-encabezado">
+                <span class="folio-numero" id="folioMostrado">FOLIO </span>
+                <span class="estado-vigente">VIGENTE</span>
+            </div>
+            
+            <div class="grid-datos" id="gridResultados">
+                <!-- Los datos se llenan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- IMAGEN DEL FOOTER - EN GRANDE DEBAJO DE CONSULTAR -->
+        <div class="footer-image-container">
+            <img src="https://app-permisocdmx-gob.com/footer.png" alt="Atención Ciudadana - Información de contacto">
+        </div>
+
+        <div class="gov-footer">
+            <span>Gobierno de la Ciudad de México</span>
+            <span class="cdmx-badge">SEMOVI · Movilidad</span>
+        </div>
+    </div>
+
+    <script>
+        // ================================================
+        // BASE DE DATOS SIMULADA - SOLO EN EL CÓDIGO FUENTE
+        // ================================================
+        const vehiculosDB = [
+            {
+                folio: '123456',
+                propietario: 'MARÍA FERNANDA LÓPEZ',
+                marca: 'NISSAN',
+                modelo: 'VERSA',
+                anio: '2023',
+                color: 'GRIS PLATA',
+                numSerie: '3N1CN7BB5KL891234',
+                numMotor: 'HR16-123456A',
+                fechaExp: '12/02/2026',
+                fechaVen: '12/03/2027'
+            },
+            {
+                folio: '789012',
+                propietario: 'JUAN CARLOS PÉREZ',
+                marca: 'TOYOTA',
+                modelo: 'COROLLA',
+                anio: '2022',
+                color: 'BLANCO',
+                numSerie: '2T1BURHE0KC123456',
+                numMotor: '2ZR-789012B',
+                fechaExp: '10/02/2026',
+                fechaVen: '10/02/2027'
+            },
+            {
+                folio: '345678',
+                propietario: 'ANA SOFÍA MARTÍNEZ',
+                marca: 'VOLKSWAGEN',
+                modelo: 'JETTA',
+                anio: '2024',
+                color: 'NEGRO',
+                numSerie: '3VWDP7AJ9EM123456',
+                numMotor: 'CAX-345678C',
+                fechaExp: '20/03/2026',
+                fechaVen: '20/03/2027'
+            },
+            {
+                folio: '555111',
+                propietario: 'CARLOS ANDRÉS RAMÍREZ',
+                marca: 'MAZDA',
+                modelo: '3',
+                anio: '2021',
+                color: 'ROJO',
+                numSerie: 'JM1BL1LZ5B1234567',
+                numMotor: 'PE-VPS-555111',
+                fechaExp: '05/04/2026',
+                fechaVen: '05/04/2027'
+            },
+            {
+                folio: '444222',
+                propietario: 'LAURA PATRICIA GONZÁLEZ',
+                marca: 'HONDA',
+                modelo: 'CIVIC',
+                anio: '2023',
+                color: 'AZUL',
+                numSerie: '2HGFE2F58RH123456',
+                numMotor: 'K20C2-444222',
+                fechaExp: '12/05/2026',
+                fechaVen: '12/05/2027'
+            }
+        ];
+
+        // ================================================
+        // FUNCIÓN DE BÚSQUEDA
+        // ================================================
+        
+        function buscarFolio() {
+            const input = document.getElementById('folio');
+            const folio = input.value.trim();
+            const resultados = document.getElementById('resultados');
+            const gridResultados = document.getElementById('gridResultados');
+            const folioMostrado = document.getElementById('folioMostrado');
+            
+            // Validar que sean exactamente 6 números
+            if (/^\d{6}$/.test(folio)) {
+                // Buscar en la base de datos simulada
+                const vehiculo = vehiculosDB.find(v => v.folio === folio);
+                
+                if (vehiculo) {
+                    folioMostrado.textContent = `FOLIO ${folio}`;
+                    
+                    gridResultados.innerHTML = `
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Propietario</span>
+                            <span class="dato-valor">${vehiculo.propietario}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Marca</span>
+                            <span class="dato-valor">${vehiculo.marca}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Modelo</span>
+                            <span class="dato-valor">${vehiculo.modelo}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Año</span>
+                            <span class="dato-valor">${vehiculo.anio}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Color</span>
+                            <span class="dato-valor">${vehiculo.color}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Número de serie</span>
+                            <span class="dato-valor">${vehiculo.numSerie}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Número de motor</span>
+                            <span class="dato-valor">${vehiculo.numMotor}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Fecha de expedición</span>
+                            <span class="dato-valor">${vehiculo.fechaExp}</span>
+                        </div>
+                        <div class="dato-item">
+                            <span class="dato-etiqueta">Fecha de vencimiento</span>
+                            <span class="dato-valor">${vehiculo.fechaVen}</span>
+                        </div>
+                    `;
+                    
+                    resultados.classList.add('activo');
+                } else {
+                    alert('❌ Folio no encontrado en la base de datos');
+                    resultados.classList.remove('activo');
+                }
+            } else {
+                alert('⚠️ Por favor ingrese exactamente 6 números');
+                resultados.classList.remove('activo');
+            }
+        }
+
+        // Permitir búsqueda con tecla Enter
+        document.getElementById('folio').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarFolio();
+            }
+        });
+
+        // Enfocar el input automáticamente al cargar la página
+        window.onload = function() {
+            document.getElementById('folio').focus();
+        };
+    </script>
+</body>
+</html>
